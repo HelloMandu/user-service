@@ -18,12 +18,15 @@ export class EmailService {
       service: 'Gmail',
       auth: {
         user: 'YOUR_GMAIL', // TODO: config
-        pass: 'YOUR_PASSWORD' // TODO: config
-      }
+        pass: 'YOUR_PASSWORD', // TODO: config
+      },
     });
   }
 
-  async sendMemberJoinVerification(emailAddress: string, signupVerifyToken: string) {
+  async sendMemberJoinVerification(
+    emailAddress: string,
+    signupVerifyToken: string,
+  ) {
     const baseUrl = 'http://localhost:3000'; // TODO: config
 
     const url = `${baseUrl}/users/email-verify?signupVerifyToken=${signupVerifyToken}`;
@@ -36,8 +39,8 @@ export class EmailService {
         <form action="${url}" method="POST">
           <button>가입확인</button>
         </form>
-      `
-    }
+      `,
+    };
 
     return await this.transporter.sendMail(mailOptions);
   }

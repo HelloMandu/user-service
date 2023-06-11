@@ -5,7 +5,7 @@ import { UserInfo } from './UserInfo';
 
 @Injectable()
 export class UsersService {
-  constructor(private emailService: EmailService) { }
+  constructor(private emailService: EmailService) {}
 
   async createUser(name: string, email: string, password: string) {
     await this.checkUserExists(email);
@@ -20,12 +20,20 @@ export class UsersService {
     return false; // TODO: DB 연동 후 구현
   }
 
-  private saveUser(name: string, email: string, password: string, signupVerifyToken: string) {
+  private saveUser(
+    name: string,
+    email: string,
+    password: string,
+    signupVerifyToken: string,
+  ) {
     return; // TODO: DB 연동 후 구현
   }
 
   private async sendMemberJoinEmail(email: string, signupVerifyToken: string) {
-    await this.emailService.sendMemberJoinVerification(email, signupVerifyToken);
+    await this.emailService.sendMemberJoinVerification(
+      email,
+      signupVerifyToken,
+    );
   }
 
   async verifyEmail(signupVerifyToken: string): Promise<string> {
