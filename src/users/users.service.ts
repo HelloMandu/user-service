@@ -1,14 +1,28 @@
 import * as uuid from 'uuid';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { EmailService } from 'src/email/email.service';
 import { UserInfo } from './UserInfo';
+import { UserEntity } from './entity/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private emailService: EmailService) {}
+  constructor(
+    private emailService: EmailService,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
 
-  async createUser(name: string, email: string, password: string) {
-    await this.checkUserExists(email);
+  async createUser(
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<void> {
+    const userExist = await this.checkUserExists(email);
+    if (userExist) {
+      throw new Error('이미 가입된 이메일입니다.');
+    }
 
     const signupVerifyToken = uuid.v1();
 
@@ -16,20 +30,29 @@ export class UsersService {
     await this.sendMemberJoinEmail(email, signupVerifyToken);
   }
 
-  private checkUserExists(email: string) {
-    return false; // TODO: DB 연동 후 구현
+  private async checkUserExists(email: string): Promise<boolean> {
+    return !!(await this.userRepository.findOne({ where: { email } }));
   }
 
-  private saveUser(
+  private async saveUser(
     name: string,
     email: string,
     password: string,
     signupVerifyToken: string,
-  ) {
-    return; // TODO: DB 연동 후 구현
+  ): Promise<UserEntity> {
+    const user = new UserEntity();
+    user.name = name;
+    user.email = email;
+    user.password = password;
+    user.signupVerifyToken = signupVerifyToken;
+
+    return await this.userRepository.save(user);
   }
 
-  private async sendMemberJoinEmail(email: string, signupVerifyToken: string) {
+  private async sendMemberJoinEmail(
+    email: string,
+    signupVerifyToken: string,
+  ): Promise<void> {
     await this.emailService.sendMemberJoinVerification(
       email,
       signupVerifyToken,
