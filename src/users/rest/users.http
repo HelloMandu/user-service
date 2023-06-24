@@ -1,0 +1,3 @@
+GET http://localhost:3000/users/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6InRlc3QyIiwiZW1haWwiOiJ0amRhbHM2Njk1QGdtYWlsLmNvbSIsImlhdCI6MTY4NzYyNTYwNiwiZXhwIjoxNjg3NzEyMDA2fQ.cfmmJ2HQaY0eAp6nphCgLd1hea9A5jpW40caPhnw3pc

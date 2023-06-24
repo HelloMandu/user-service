@@ -86,11 +86,16 @@ export class UsersService {
     return this.authService.login(user);
   }
 
-  async getUserInfo(userId: string): Promise<UserInfo> {
-    // 1. userId를 가진 유저가 존재하는지 DB에서 확인하고 없다면 에러 처리
-    // 2. 조회된 데이터를 UserInfo 타입으로 응답
-
-    throw new Error('Method not implemented.');
+  async getUserInfo(userId: number): Promise<UserInfo> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('가입되지 않은 이메일입니다.');
+    }
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
   }
 
   // private async saveUserUsingQueryRunner(
