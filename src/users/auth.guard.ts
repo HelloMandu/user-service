@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private validateRequest(request: Request): boolean {
-    const authHeader = request.headers.get('Authorization');
+    const authHeader = request.headers['authorization'];
     if (!authHeader) {
       return false;
     }
