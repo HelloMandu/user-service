@@ -29,12 +29,7 @@ export class UsersService {
 
     const signupVerifyToken = uuid.v1();
 
-    await this.saveUserUsingTransaction(
-      name,
-      email,
-      password,
-      signupVerifyToken,
-    );
+    await this.saveUser(name, email, password, signupVerifyToken);
     await this.sendMemberJoinEmail(email, signupVerifyToken);
   }
 
@@ -55,50 +50,6 @@ export class UsersService {
     user.signupVerifyToken = signupVerifyToken;
 
     return await this.userRepository.save(user);
-  }
-
-  private async saveUserUsingQueryRunner(
-    name: string,
-    email: string,
-    password: string,
-    signupVerifyToken: string,
-  ): Promise<void> {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const user = new UserEntity();
-      user.name = name;
-      user.email = email;
-      user.password = password;
-      user.signupVerifyToken = signupVerifyToken;
-
-      await queryRunner.manager.save(user);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
-  private async saveUserUsingTransaction(
-    name: string,
-    email: string,
-    password: string,
-    signupVerifyToken: string,
-  ): Promise<void> {
-    await this.dataSource.transaction(async (manager) => {
-      const user = new UserEntity();
-      user.name = name;
-      user.email = email;
-      user.password = password;
-      user.signupVerifyToken = signupVerifyToken;
-      await manager.save(user);
-    });
   }
 
   private async sendMemberJoinEmail(
@@ -141,4 +92,48 @@ export class UsersService {
 
     throw new Error('Method not implemented.');
   }
+
+  // private async saveUserUsingQueryRunner(
+  //   name: string,
+  //   email: string,
+  //   password: string,
+  //   signupVerifyToken: string,
+  // ): Promise<void> {
+  //   const queryRunner = this.dataSource.createQueryRunner();
+  //
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
+  //
+  //   try {
+  //     const user = new UserEntity();
+  //     user.name = name;
+  //     user.email = email;
+  //     user.password = password;
+  //     user.signupVerifyToken = signupVerifyToken;
+  //
+  //     await queryRunner.manager.save(user);
+  //
+  //     await queryRunner.commitTransaction();
+  //   } catch (err) {
+  //     await queryRunner.rollbackTransaction();
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  // }
+  //
+  // private async saveUserUsingTransaction(
+  //   name: string,
+  //   email: string,
+  //   password: string,
+  //   signupVerifyToken: string,
+  // ): Promise<void> {
+  //   await this.dataSource.transaction(async (manager) => {
+  //     const user = new UserEntity();
+  //     user.name = name;
+  //     user.email = email;
+  //     user.password = password;
+  //     user.signupVerifyToken = signupVerifyToken;
+  //     await manager.save(user);
+  //   });
+  // }
 }
