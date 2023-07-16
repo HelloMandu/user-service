@@ -1,13 +1,17 @@
 version: "3.7"
 
 services:
-  node:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
   psql:
     image: postgres:14.8
     ports:
       - "5432:5432"
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - psql
+    volumes:
+      - ".:/usr/src/app"
+    ports:
+      - "3000:3000"
